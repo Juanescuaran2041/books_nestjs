@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { get,  } from 'http';
 
 interface User {
@@ -64,6 +64,16 @@ export class UsersController {
         console.log(Body)
         return{
             msg: "Usuario creado"
+        }
+    }
+
+    @Delete(':id')
+
+    deleteUser(@Param('id') id:String){
+        const position = this.users.findIndex((user) => user.id)     
+        this.users.splice(position, 1)
+        return {
+            msg: "Usuario eliminado correctamente"
         }
     }
 

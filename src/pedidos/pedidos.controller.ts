@@ -1,15 +1,15 @@
 import { Controller, Get, Param } from '@nestjs/common';
 
 interface Pedido {
-  id: number;
-  metodoPago: MetodosPago;
-  productos: string[];
+    id: number;
+    metodoPago: MetodosPago;
+    productos: string[];
 }
 
 enum MetodosPago {
-  TarjetaCredito = 'Tarjeta de crédito',
-  CREDITO = 'credito',
-  EFECTIVO = 'efectivo'
+    TarjetaCredito = 'Tarjeta de crédito',
+    CREDITO = 'credito',
+    EFECTIVO = 'efectivo'
 }
 
 @Controller('pedidos')
@@ -20,7 +20,7 @@ export class PedidosController {
             metodoPago: MetodosPago.TarjetaCredito,
             productos: ['Producto 1', 'Producto 2']
         },
-        { 
+        {
             id: 2,
             metodoPago: MetodosPago.CREDITO,
             productos: ['Producto 3', 'Producto 4']
@@ -37,12 +37,6 @@ export class PedidosController {
         return this.pedidos;
     }
 
-    @Get(':id')
-    GetPedidoById(@Param('id') id: number) {
-        const data = this.pedidos.find(pedido => pedido.id === Number(id));
-        return data;
-    }
-
     @Get('metodoPago/tarjeta-credito')
     GetPedidosPorTarjetaCredito() {
         return this.pedidos.filter(pedido => pedido.metodoPago === MetodosPago.TarjetaCredito);
@@ -57,5 +51,12 @@ export class PedidosController {
     GetPedidosPorEfectivo() {
         return this.pedidos.filter(pedido => pedido.metodoPago === MetodosPago.EFECTIVO);
     }
+
+    @Get(':id')
+    GetPedidoById(@Param('id') id: number) {
+        const data = this.pedidos.find(pedido => pedido.id === Number(id));
+        return data;
+    }
+
 
 }
