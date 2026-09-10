@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 
 interface Pedido {
     id: number;
@@ -7,7 +7,7 @@ interface Pedido {
 }
 
 enum MetodosPago {
-    TarjetaCredito = 'Tarjeta de crédito',
+    TarjetaCredito = 'Tarjeta de credito',
     CREDITO = 'credito',
     EFECTIVO = 'efectivo'
 }
@@ -58,5 +58,23 @@ export class PedidosController {
         return data;
     }
 
+    @Post()
+    createOrder(@Body() pedido:Pedido){
+        this.pedidos.push(pedido)
+        console.log(pedido)
+        return{
+            msg: "Pedido registrado Correctamente"
+        }
+    }
+
+    @Delete(':id')
+    deleteByID(@Param('id') id:number){
+        const position = this.pedidos.findIndex((pedido) => pedido.id)
+        this.pedidos.splice(position, 1)
+        return{
+            msg: "Pedido eliminado correctamente"
+        }
+
+    }
 
 }
