@@ -43,15 +43,19 @@ export class PedidosController {
         return data;
     }
 
-    @Get('metodoPago/:metodoPago')
-    GetPedidosByMetodoPago(@Param('metodoPago') metodoPago: MetodosPago) {
-        const data = this.pedidos.filter(pedido => pedido.metodoPago === metodoPago);
-        return data;
+    @Get('metodoPago/tarjeta-credito')
+    GetPedidosPorTarjetaCredito() {
+        return this.pedidos.filter(pedido => pedido.metodoPago === MetodosPago.TarjetaCredito);
     }
 
+    @Get('metodoPago/credito')
+    GetPedidosPorCredito() {
+        return this.pedidos.filter(pedido => pedido.metodoPago === MetodosPago.CREDITO);
+    }
 
-
-    
-
+    @Get('metodoPago/efectivo')
+    GetPedidosPorEfectivo() {
+        return this.pedidos.filter(pedido => pedido.metodoPago === MetodosPago.EFECTIVO);
+    }
 
 }

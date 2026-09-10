@@ -1,5 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { get } from 'http';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { get,  } from 'http';
 
 interface User {
   id: number;
@@ -57,5 +57,15 @@ export class UsersController {
             email: data.email   
         }
     }
+
+    @Post()
+    createUser(@Body() user:User  ){
+        this.users.push(user)
+        console.log(Body)
+        return{
+            msg: "Usuario creado"
+        }
+    }
+
 }
 
