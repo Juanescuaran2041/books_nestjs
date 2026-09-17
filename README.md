@@ -115,4 +115,4 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
 ## Autor
 
-💻 Juan Esteban Cuaran 5B
+💻 Juan Esteban Cuaran 5B 

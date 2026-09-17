@@ -1,19 +1,19 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { get,  } from 'http';
+import { get, } from 'http';
 
 interface User {
-  id: number;
-  name: string;
-  email: string;
+    id: number;
+    name: string;
+    email: string;
 }
 
 @Controller('users')
 export class UsersController {
     private users: User[] = [
-        { 
-            id: 1, 
-            name: 'Juanes', 
-            email: 'juan@ejemplo.com' 
+        {
+            id: 1,
+            name: 'Juanes',
+            email: 'juan@ejemplo.com'
         },
         {
             id: 2,
@@ -33,7 +33,7 @@ export class UsersController {
     }
 
     @Get(':id')
-    getUserById(@Param('id') id: number){
+    getUserById(@Param('id') id: number) {
         const data = this.users.find(user => user.id === Number(id));
 
         if (!data) {
@@ -46,7 +46,7 @@ export class UsersController {
     }
 
     @Get('name/:name')
-    getEmailByName (@Param('name') name: string){
+    getEmailByName(@Param('name') name: string) {
         const data = this.users.find((user) => user.name.toLowerCase() === name.toLowerCase());
         if (!data) {
             return {
@@ -54,28 +54,67 @@ export class UsersController {
             }
         }
         return {
-            email: data.email   
+            email: data.email
         }
     }
 
     @Post()
-    createUser(@Body() user:User  ){
+    createUser(@Body() user: User) {
         this.users.push(user)
         console.log(Body)
-        return{
+        return {
             msg: "Usuario creado"
         }
     }
 
     @Delete(':id')
+    deleteUser(@Param('id') id: string) {
+        const position = this.users.findIndex((user) => user.id === Number(id))
 
-    deleteUser(@Param('id') id:String){
-        const position = this.users.findIndex((user) => user.id)     
+        if (position === -1) {
+            return {
+                msg: "El usuario no existe"
+            }
+        }
+
         this.users.splice(position, 1)
         return {
             msg: "Usuario eliminado correctamente"
         }
     }
+
+    @Put(':id')
+    updatUser(@Param('id') id: number, @Body() changes: User) {
+        console.log('.:: ID usuario: ', id)
+        console.log('.::Cambios: ', changes)
+
+        const position = this.users.findIndex((user) => user.id === Number(id));
+
+        if (position === -1) {
+            return {
+                msg: "El usuario no existe"
+
+            }
+            
+        }
+
+
+        const currentData = this.users[position];
+
+        const updateUser = {
+            ...currentData, 
+            ...changes
+        }
+
+        this.users[position] = updateUser;
+
+        return {
+            msg: "User Updated",
+            data: updateUser
+        }
+
+    }
+
 
 }
 
