@@ -1,8 +1,8 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Post, Put, UnprocessableEntityException } from '@nestjs/common';
-import { NotFoundError } from 'rxjs';
+import { CreateUserDTO } from './user.dto';
 
 interface User {
-    id: number;
+    id: string;
     name: string;
     email: string;
 }
@@ -11,17 +11,17 @@ interface User {
 export class UsersController {
     private users: User[] = [
         {
-            id: 1,
+            id: "1",
             name: 'Juanes',
             email: 'juan@ejemplo.com'
         },
         {
-            id: 2,
+            id: "2",
             name: 'pancracia',
             email: 'pancracia@ejemplo.com'
         },
         {
-            id: 3,
+            id: "3",
             name: 'Pedro',
             email: 'pedro@ejemplo.com'
         }
@@ -34,14 +34,14 @@ export class UsersController {
 
     @Get(':id')
     getUserById(@Param('id') id: number) {
-        const data = this.users.find(user => user.id === Number(id));
+        const data = this.users.find(user => user.id === String(id));
 
         if (data === undefined) {
             throw new NotFoundException(`usuario con id ${id} no encontrado`)
         }
 
         //simulacion para error de permisos
-        if (data.id === 1){
+        if (data.id === "1") {
             throw new ForbiddenException(`No tienes permiso para acceder al usuario con id ${data.id}`)
         }
 
@@ -62,33 +62,37 @@ export class UsersController {
     }
 
     @Post()
-    createUser(@Body() user: User) {
-        
+    createUser(@Body() userPayload: CreateUserDTO) {
 
-        //valide que el nombre y el email no esten vacios
 
-        if(user.email.trim() === "" || user.name.trim() === ""){
+        //valide que el nombre y el email no esten vacio
+
+        const newUser = {
+            ...userPayload,
+            id: `${new Date().getTime()}`
+        }
+
+        this.users.push(newUser)
+
+        if (userPayload.email.trim() === "" || userPayload.name.trim() === "") {
             throw new BadRequestException(`Se deben registrar todos los campos para crear el usuario`)
         }
 
         //validar que el correo tenga el formato correcto
-        if(!user.email.includes("@")){
-            throw new UnprocessableEntityException(`Email ${user.email} no es valido`)
+        if (!userPayload.email.includes("@")) {
+            throw new UnprocessableEntityException(`Email ${userPayload.email} no es valido`)
         }
 
-
-        
-        this.users.push(user)
         console.log(Body)
         return {
             msg: "Usuario creado",
-            data: user
+            data: userPayload
         }
     }
 
     @Delete(':id')
     deleteUser(@Param('id') id: string) {
-        const position = this.users.findIndex((user) => user.id === Number(id))
+        const position = this.users.findIndex((user) => user.id === String(id))
 
         if (position === -1) {
             throw new NotFoundException(`Error no se ha podido eliminar el usuario con id ${id}`)
@@ -105,18 +109,18 @@ export class UsersController {
         console.log('.:: ID usuario: ', id)
         console.log('.::Cambios: ', changes)
 
-        const position = this.users.findIndex((user) => user.id === Number(id));
+        const position = this.users.findIndex((user) => user.id === String(id));
 
         if (position === -1) {
             throw new NotFoundException(`Error no se ha encontrados el usuario con id ${id}`)
-            
+
         }
 
 
         const currentData = this.users[position];
 
         const updateUser = {
-            ...currentData, 
+            ...currentData,
             ...changes
         }
 
