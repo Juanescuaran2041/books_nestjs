@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { get, } from 'http';
 
 interface User {
     id: number;
@@ -17,8 +16,8 @@ export class UsersController {
         },
         {
             id: 2,
-            name: 'Maria',
-            email: 'maria@ejemplo.com'
+            name: 'pancracia',
+            email: 'pancracia@ejemplo.com'
         },
         {
             id: 3,
