@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
 import { NotFoundError } from 'rxjs';
 
 interface User {
@@ -66,13 +66,13 @@ export class UsersController {
         
         //validar que el correo tenga el formato correcto
         if(!user.email.includes("@")){
-            throw new NotFoundException(`Email ${user.email} no es valido`)
+            throw new BadRequestException(`Email ${user.email} no es valido`)
         }
 
         //valide que el nombre y el email no esten vacios
 
-        if(user.email === undefined || user.name === undefined){
-            throw new NotFoundException(`Se deben registrar todos los campos para crear el usuario`)
+        if(user.email.trim() === "" || user.name.trim() === ""){
+            throw new BadRequestException(`Se deben registrar todos los campos para crear el usuario`)
         }
         
         this.users.push(user)
