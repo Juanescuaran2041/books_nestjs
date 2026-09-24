@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Post, Put, UnprocessableEntityException } from '@nestjs/common';
-import { CreateUserDTO } from './user.dto';
+import { CreateUserDTO, UpdateUserDTO } from './user.dto';
 
 interface User {
     id: string;
@@ -68,25 +68,25 @@ export class UsersController {
         //valide que el nombre y el email no esten vacio
 
         const newUser = {
-            ...userPayload,
-            id: `${new Date().getTime()}`
+            id: `${new Date().getTime()}`,
+            ...userPayload
         }
 
         this.users.push(newUser)
 
-        if (userPayload.email.trim() === "" || userPayload.name.trim() === "") {
-            throw new BadRequestException(`Se deben registrar todos los campos para crear el usuario`)
-        }
+        // if (userPayload.email.trim() === "" || userPayload.name.trim() === "") {
+        //     throw new BadRequestException(`Se deben registrar todos los campos para crear el usuario`)
+        // }
 
-        //validar que el correo tenga el formato correcto
-        if (!userPayload.email.includes("@")) {
-            throw new UnprocessableEntityException(`Email ${userPayload.email} no es valido`)
-        }
+        // //validar que el correo tenga el formato correcto
+        // if (!userPayload.email.includes("@")) {
+        //     throw new UnprocessableEntityException(`Email ${userPayload.email} no es valido`)
+        // }
 
         console.log(Body)
         return {
             msg: "Usuario creado",
-            data: userPayload
+            data: newUser
         }
     }
 
@@ -105,7 +105,7 @@ export class UsersController {
     }
 
     @Put(':id')
-    updatUser(@Param('id') id: number, @Body() changes: User) {
+    updatUser(@Param('id') id: number, @Body() changes: UpdateUserDTO) {
         console.log('.:: ID usuario: ', id)
         console.log('.::Cambios: ', changes)
 
