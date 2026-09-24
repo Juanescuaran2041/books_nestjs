@@ -65,6 +65,11 @@ export class PedidosController {
     @Get(':id')
     GetPedidoById(@Param('id') id: number) {
         const data = this.pedidos.find(pedido => pedido.id === Number(id));
+
+        if (data === undefined || data === null){
+            throw new NotFoundException (`No se ha encontrado el pedido con id ${id}`)
+        }
+
         return data;
     }
 
@@ -84,7 +89,9 @@ export class PedidosController {
             throw new NotFoundException(`Pedido con id ${id} no encontrado`);
         }
         this.pedidos.splice(position, 1);
-        return { msg: 'Pedido eliminado correctamente' };
+        return { 
+            msg: 'Pedido eliminado correctamente' 
+        };
     }
 
 }

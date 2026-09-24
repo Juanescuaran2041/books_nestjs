@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
 import { NotFoundError } from 'rxjs';
 
 interface User {
@@ -37,19 +37,24 @@ export class UsersController {
         const data = this.users.find(user => user.id === Number(id));
 
         if (data === undefined) {
-            throw new NotFoundException("usuario no encontrado")
+            throw new NotFoundException(`usuario con id ${id} no encontrado`)
+        }
+
+        //simulacion para error de permisos
+        if (data.id === 1){
+            throw new ForbiddenException(`No tienes permiso para acceder al usuario con id ${data.id}`)
         }
 
         return data;
     }
 
+
+
     @Get('name/:name')
     getEmailByName(@Param('name') name: string) {
         const data = this.users.find((user) => user.name.toLowerCase() === name.toLowerCase());
-        if (!data) {
-            return {
-                message: "name no encontrado"
-            }
+        if (data === undefined || data === null) {
+            throw new NotFoundException(`Usuario con nombre ${name} no encontrado`)
         }
         return {
             email: data.email
@@ -58,10 +63,23 @@ export class UsersController {
 
     @Post()
     createUser(@Body() user: User) {
+        
+        //validar que el correo tenga el formato correcto
+        if(!user.email.includes("@")){
+            throw new NotFoundException(`Email ${user.email} no es valido`)
+        }
+
+        //valide que el nombre y el email no esten vacios
+
+        if(user.email === undefined || user.name === undefined){
+            throw new NotFoundException(`Se deben registrar todos los campos para crear el usuario`)
+        }
+        
         this.users.push(user)
         console.log(Body)
         return {
-            msg: "Usuario creado"
+            msg: "Usuario creado",
+            data: user
         }
     }
 
@@ -70,9 +88,7 @@ export class UsersController {
         const position = this.users.findIndex((user) => user.id === Number(id))
 
         if (position === -1) {
-            return {
-                msg: "El usuario no existe"
-            }
+            throw new NotFoundException(`Error no se ha podido eliminar el usuario con id ${id}`)
         }
 
         this.users.splice(position, 1)
@@ -89,10 +105,7 @@ export class UsersController {
         const position = this.users.findIndex((user) => user.id === Number(id));
 
         if (position === -1) {
-            return {
-                msg: "El usuario no existe"
-
-            }
+            throw new NotFoundException(`Error no se ha encontrados el usuario con id ${id}`)
             
         }
 
