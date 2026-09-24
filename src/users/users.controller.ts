@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { NotFoundError } from 'rxjs';
 
 interface User {
     id: number;
@@ -35,10 +36,8 @@ export class UsersController {
     getUserById(@Param('id') id: number) {
         const data = this.users.find(user => user.id === Number(id));
 
-        if (!data) {
-            return {
-                message: "Usuario no encontrado"
-            }
+        if (data === undefined) {
+            throw new NotFoundException("usuario no encontrado")
         }
 
         return data;

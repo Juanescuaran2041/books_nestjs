@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    NotFoundException,
+    Param,
+    ParseIntPipe,
+    Post,
+    Put
+} from '@nestjs/common';
 
 interface Pedido {
     id: number;
@@ -68,13 +78,13 @@ export class PedidosController {
     }
 
     @Delete(':id')
-    deleteByID(@Param('id') id:number){
-        const position = this.pedidos.findIndex((pedido) => pedido.id)
-        this.pedidos.splice(position, 1)
-        return{
-            msg: "Pedido eliminado correctamente"
+    deleteByID(@Param('id', ParseIntPipe) id: number) {
+        const position = this.pedidos.findIndex((pedido) => pedido.id === id);
+        if (position === -1) {
+            throw new NotFoundException(`Pedido con id ${id} no encontrado`);
         }
-
+        this.pedidos.splice(position, 1);
+        return { msg: 'Pedido eliminado correctamente' };
     }
 
 }
