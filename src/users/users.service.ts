@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './users.model';
-import { CreateUserDTO } from './user.dto';
+import { CreateUserDTO, UpdateUserDTO } from './user.dto';
 
 @Injectable()
 export class UsersService {
@@ -76,4 +76,33 @@ export class UsersService {
             msg: "Usuario eliminado correctamente"
         }
     }
+
+    updateUser(id:string, updateUserdto: UpdateUserDTO) {
+        console.log('.:: ID usuario: ', id)
+        console.log('.::Cambios: ', updateUserdto)
+
+        const position = this.users.findIndex((user) => user.id === String(id));
+
+        if (position === -1) {
+            throw new NotFoundException(`Error no se ha encontrados el usuario con id ${id}`)
+
+        }
+
+
+        const currentData = this.users[position];
+
+        const updateUser = {
+            ...currentData,
+            ...updateUserdto
+        }
+
+        this.users[position] = updateUser;
+
+        return {
+            msg: "User Updated",
+            data: updateUser
+        }
+
+    }
+    
 }

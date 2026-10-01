@@ -1,14 +1,4 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    NotFoundException,
-    Param,
-    ParseIntPipe,
-    Post,
-    Put
-} from '@nestjs/common';
+import {Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put} from '@nestjs/common';
 
 interface Pedido {
     id: number;
@@ -94,4 +84,5 @@ export class PedidosController {
         };
     }
 
+    
 }

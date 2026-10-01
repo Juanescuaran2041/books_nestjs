@@ -33,35 +33,9 @@ export class UsersController {
         return this.userService.deleteUser(String(id))
     }
 
-    // @Put(':id')
-    // updatUser(@Param('id') id: number, @Body() changes: UpdateUserDTO) {
-    //     console.log('.:: ID usuario: ', id)
-    //     console.log('.::Cambios: ', changes)
-
-    //     const position = this.users.findIndex((user) => user.id === String(id));
-
-    //     if (position === -1) {
-    //         throw new NotFoundException(`Error no se ha encontrados el usuario con id ${id}`)
-
-    //     }
-
-
-    //     const currentData = this.users[position];
-
-    //     const updateUser = {
-    //         ...currentData,
-    //         ...changes
-    //     }
-
-    //     this.users[position] = updateUser;
-
-    //     return {
-    //         msg: "User Updated",
-    //         data: updateUser
-    //     }
-
-    // }
-
-
+    @Put(':id')
+    updatUser(@Param('id') id: String, @Body() changes: UpdateUserDTO) {
+        return this.userService.updateUser(String(id), changes)
+    }
 }
 
