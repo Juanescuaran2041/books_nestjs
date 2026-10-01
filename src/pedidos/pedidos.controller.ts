@@ -1,88 +1,51 @@
 import {Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put} from '@nestjs/common';
-
-interface Pedido {
-    id: number;
-    metodoPago: MetodosPago;
-    productos: string[];
-}
-
-enum MetodosPago {
-    TarjetaCredito = 'Tarjeta de credito',
-    CREDITO = 'credito',
-    EFECTIVO = 'efectivo'
-}
+import { MetodosPago, Pedido } from './pedido.model';
+import { PedidosService } from './pedidos.service';
 
 @Controller('pedidos')
 export class PedidosController {
-    private pedidos: Pedido[] = [
-        {
-            id: 1,
-            metodoPago: MetodosPago.TarjetaCredito,
-            productos: ['Producto 1', 'Producto 2']
-        },
-        {
-            id: 2,
-            metodoPago: MetodosPago.CREDITO,
-            productos: ['Producto 3', 'Producto 4']
-        },
-        {
-            id: 3,
-            metodoPago: MetodosPago.EFECTIVO,
-            productos: ['Producto 5', 'Producto 6']
-        }
-    ];
+    constructor (private pedidoService:PedidosService){}
 
     @Get()
     GetAllPedidos(): Pedido[] {
-        return this.pedidos;
+        return this.pedidoService.findAll();
     }
 
-    @Get('metodoPago/tarjeta-credito')
-    GetPedidosPorTarjetaCredito() {
-        return this.pedidos.filter(pedido => pedido.metodoPago === MetodosPago.TarjetaCredito);
+    @Get('metodoPago/:metodoPago')
+    GetPedidosPorTarjetaCredito(@Param('metodoPago') metodoPago: MetodosPago) {
+        return this.pedidoService.findByPayMethod(metodoPago)
     }
 
-    @Get('metodoPago/credito')
-    GetPedidosPorCredito() {
-        return this.pedidos.filter(pedido => pedido.metodoPago === MetodosPago.CREDITO);
-    }
+    // @Get(':id')
+    // GetPedidoById(@Param('id') id: String) {
+    //     const data = this.pedidos.find(pedido => pedido.id === String(id));
 
-    @Get('metodoPago/efectivo')
-    GetPedidosPorEfectivo() {
-        return this.pedidos.filter(pedido => pedido.metodoPago === MetodosPago.EFECTIVO);
-    }
+    //     if (data === undefined || data === null){
+    //         throw new NotFoundException (`No se ha encontrado el pedido con id ${id}`)
+    //     }
 
-    @Get(':id')
-    GetPedidoById(@Param('id') id: number) {
-        const data = this.pedidos.find(pedido => pedido.id === Number(id));
+    //     return data;
+    // }
 
-        if (data === undefined || data === null){
-            throw new NotFoundException (`No se ha encontrado el pedido con id ${id}`)
-        }
+    // @Post()
+    // createOrder(@Body() pedido:Pedido){
+    //     this.pedidos.push(pedido)
+    //     console.log(pedido)
+    //     return{
+    //         msg: "Pedido registrado Correctamente"
+    //     }
+    // }
 
-        return data;
-    }
+    // @Delete(':id')
+    // deleteByID(@Param('id', ParseIntPipe) id: String) {
+    //     const position = this.pedidos.findIndex((pedido) => pedido.id === id);
+    //     if (position === -1) {
+    //         throw new NotFoundException(`Pedido con id ${id} no encontrado`);
+    //     }
+    //     this.pedidos.splice(position, 1);
+    //     return { 
+    //         msg: 'Pedido eliminado correctamente' 
+    //     };
+    // }
 
-    @Post()
-    createOrder(@Body() pedido:Pedido){
-        this.pedidos.push(pedido)
-        console.log(pedido)
-        return{
-            msg: "Pedido registrado Correctamente"
-        }
-    }
-
-    @Delete(':id')
-    deleteByID(@Param('id', ParseIntPipe) id: number) {
-        const position = this.pedidos.findIndex((pedido) => pedido.id === id);
-        if (position === -1) {
-            throw new NotFoundException(`Pedido con id ${id} no encontrado`);
-        }
-        this.pedidos.splice(position, 1);
-        return { 
-            msg: 'Pedido eliminado correctamente' 
-        };
-    }
-
-    
 }
