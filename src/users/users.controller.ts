@@ -1,137 +1,66 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Post, Put, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDTO, UpdateUserDTO } from './user.dto';
-
-interface User {
-    id: string;
-    name: string;
-    email: string;
-}
-
+import { User } from './users.model';
+import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
-    private users: User[] = [
-        {
-            id: "1",
-            name: 'Juanes',
-            email: 'juan@ejemplo.com'
-        },
-        {
-            id: "2",
-            name: 'pancracia',
-            email: 'pancracia@ejemplo.com'
-        },
-        {
-            id: "3",
-            name: 'Pedro',
-            email: 'pedro@ejemplo.com'
-        }
-    ];
+    
+    constructor(private userService:UsersService){}
+
 
     @Get()
-    getAllUsers(): User[] {
-        return this.users;
+    getAllUsers(){
+        return this.userService.findAll()
     }
 
     @Get(':id')
     getUserById(@Param('id') id: number) {
-        const data = this.users.find(user => user.id === String(id));
-
-        if (data === undefined) {
-            throw new NotFoundException(`usuario con id ${id} no encontrado`)
-        }
-
-        //simulacion para error de permisos
-        if (data.id === "1") {
-            throw new ForbiddenException(`No tienes permiso para acceder al usuario con id ${data.id}`)
-        }
-
-        return data;
+        return this.userService.findByID(String(id))
     }
-
-
 
     @Get('name/:name')
     getEmailByName(@Param('name') name: string) {
-        const data = this.users.find((user) => user.name.toLowerCase() === name.toLowerCase());
-        if (data === undefined || data === null) {
-            throw new NotFoundException(`Usuario con nombre ${name} no encontrado`)
-        }
-        return {
-            email: data.email
-        }
+        return this.userService.findEmailByName(String(name))
     }
 
     @Post()
     createUser(@Body() userPayload: CreateUserDTO) {
-
-
-        //valide que el nombre y el email no esten vacio
-
-        const newUser = {
-            id: `${new Date().getTime()}`,
-            ...userPayload
-        }
-
-        this.users.push(newUser)
-
-        // if (userPayload.email.trim() === "" || userPayload.name.trim() === "") {
-        //     throw new BadRequestException(`Se deben registrar todos los campos para crear el usuario`)
-        // }
-
-        // //validar que el correo tenga el formato correcto
-        // if (!userPayload.email.includes("@")) {
-        //     throw new UnprocessableEntityException(`Email ${userPayload.email} no es valido`)
-        // }
-
-        console.log(Body)
-        return {
-            msg: "Usuario creado",
-            data: newUser
-        }
+        return this.userService.createUser(userPayload)
     }
 
     @Delete(':id')
     deleteUser(@Param('id') id: string) {
-        const position = this.users.findIndex((user) => user.id === String(id))
-
-        if (position === -1) {
-            throw new NotFoundException(`Error no se ha podido eliminar el usuario con id ${id}`)
-        }
-
-        this.users.splice(position, 1)
-        return {
-            msg: "Usuario eliminado correctamente"
-        }
+        return this.userService.deleteUser(String(id))
     }
 
-    @Put(':id')
-    updatUser(@Param('id') id: number, @Body() changes: UpdateUserDTO) {
-        console.log('.:: ID usuario: ', id)
-        console.log('.::Cambios: ', changes)
+    // @Put(':id')
+    // updatUser(@Param('id') id: number, @Body() changes: UpdateUserDTO) {
+    //     console.log('.:: ID usuario: ', id)
+    //     console.log('.::Cambios: ', changes)
 
-        const position = this.users.findIndex((user) => user.id === String(id));
+    //     const position = this.users.findIndex((user) => user.id === String(id));
 
-        if (position === -1) {
-            throw new NotFoundException(`Error no se ha encontrados el usuario con id ${id}`)
+    //     if (position === -1) {
+    //         throw new NotFoundException(`Error no se ha encontrados el usuario con id ${id}`)
 
-        }
+    //     }
 
 
-        const currentData = this.users[position];
+    //     const currentData = this.users[position];
 
-        const updateUser = {
-            ...currentData,
-            ...changes
-        }
+    //     const updateUser = {
+    //         ...currentData,
+    //         ...changes
+    //     }
 
-        this.users[position] = updateUser;
+    //     this.users[position] = updateUser;
 
-        return {
-            msg: "User Updated",
-            data: updateUser
-        }
+    //     return {
+    //         msg: "User Updated",
+    //         data: updateUser
+    //     }
 
-    }
+    // }
 
 
 }
