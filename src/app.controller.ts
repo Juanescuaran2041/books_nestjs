@@ -10,6 +10,7 @@ export class AppController {
   getHello(): string {
     const myVar = this.configService.get<string>('MY_VAR', {infer: true});
     const openAiApi = this.configService.get<string>('OPEN_AI_API', {infer: true});
-    return `Hello World! MY_VAR: ${myVar}, OPEN_AI_API: ${openAiApi}`;
+    const message = this.appService.getHello();
+    return `message: ${message}, MY_VAR: ${myVar}, OPEN_AI_API: ${openAiApi}`;
   }
 }
