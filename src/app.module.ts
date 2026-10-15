@@ -5,9 +5,10 @@ import { UsersController } from './users/users.controller';
 import { PedidosController } from './pedidos/pedidos.controller';
 import { UsersService } from './users/users.service';
 import { PedidosService } from './pedidos/pedidos.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [],
+  imports: [ConfigModule.forRoot()],
   controllers: [AppController, UsersController, PedidosController],
   providers: [AppService, UsersService, PedidosService],
 })
