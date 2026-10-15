@@ -4,6 +4,6 @@ import { UsersModule } from './users/users.module';
 import { PedidosModule } from './pedidos/pedidos.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UsersModule, PedidosModule],
+  imports: [ConfigModule.forRoot({isGlobal:true}), UsersModule, PedidosModule],
 })
 export class AppModule {}
