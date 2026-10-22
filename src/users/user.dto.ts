@@ -33,6 +33,6 @@ export class UpdateUserDTO {
 
     @IsString()
     @IsNotEmpty()
-    @Length(6, 21)
+    @Length(6, 20)
     password: string
 }

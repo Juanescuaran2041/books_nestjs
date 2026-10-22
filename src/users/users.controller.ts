@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Post, Put, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, ParseIntPipe, Post, Put, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDTO, UpdateUserDTO } from './user.dto';
 import { User } from './users.model';
 import { UsersService } from './users.service';
@@ -14,13 +14,8 @@ export class UsersController {
     }
 
     @Get(':id')
-    getUserById(@Param('id') id: number) {
-        return this.userService.findByID(String(id))
-    }
-
-    @Get('name/:name')
-    getEmailByName(@Param('name') name: string) {
-        return this.userService.findEmailByName(String(name))
+    getUserById(@Param('id', ParseIntPipe) id: number) {
+        return this.userService.findByID(id)
     }
 
     @Post()
@@ -29,13 +24,13 @@ export class UsersController {
     }
 
     @Delete(':id')
-    deleteUser(@Param('id') id: string) {
-        return this.userService.deleteUser(String(id))
+    deleteUser(@Param('id', ParseIntPipe) id: number) {
+        return this.userService.deleteUser(id)
     }
 
     @Put(':id')
-    updatUser(@Param('id') id: String, @Body() changes: UpdateUserDTO) {
-        return this.userService.updateUser(String(id), changes)
+    updatUser(@Param('id', ParseIntPipe) id: number, @Body() changes: UpdateUserDTO) {
+        return this.userService.updateUser(id, changes)
     }
 }
 

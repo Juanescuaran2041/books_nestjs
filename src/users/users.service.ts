@@ -1,108 +1,67 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from './users.model';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDTO, UpdateUserDTO } from './user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-    private users: User[] = [
-        {
-            id: "1",
-            name: 'Juanes',
-            email: 'juan@ejemplo.com',
-            isActive: true
-        },
-        {
-            id: "2",
-            name: 'pancracia',
-            email: 'pancracia@ejemplo.com',
-            isActive: false
-        },
-        {
-            id: "3",
-            name: 'Pedro',
-            email: 'pedro@ejemplo.com',
-            isActive: true
-        }
-    ];
+    constructor(private userRepository: Repository<User>,) {}
 
-    findAll(): User[] {
-        return this.users.filter((user) => user.isActive === true)
+    async findAll() {
+        return await this.userRepository.find();
     }
 
-    findByID(id: string): User {
-        const data = this.users.find((user) => user.id === id)
-        
-        if (data === undefined || data === null){
+    async findByID(id: number) {
+        const user = await this.findOne(id)
+
+        return user
+    }
+
+    async findOne(id: number) {
+        const user = await this.userRepository.findOneBy({ id })
+
+        if (!user) {
             throw new NotFoundException(`Usuario con id ${id} no encontrado`)
         }
 
-        return data
+        return user
     }
 
+    async createUser(user: CreateUserDTO) {
+        try {
+            const newUser = this.userRepository.create({
+                email: user.email,
+                password: user.password,
+            });
+            return await this.userRepository.save(newUser)
 
-    findEmailByName(name: string): any {
-        const data = this.users.find((user) => user.name.toLowerCase() === name.toLowerCase())
-        if (data === undefined || data === null) {
-            throw new NotFoundException(`Usuario con nombre ${name} no encontrado`)
+        }catch{
+            throw new BadRequestException("Error al crear el usuario")
         }
-
-        return {
-            "email": data.email
-        }
+        
     }
 
+    async deleteUser(id: number) {
+        const user = await this.findOne(id)
 
-    createUser(user: CreateUserDTO): User {
-        const newUser = {
-            id: `${new Date().getTime()}`,
-            ...user,
-            isActive: true 
+        if (!user){
+            throw new NotFoundException(`Usuario con ID: ${id} no existe`)
         }
-
-        this.users.push(newUser)
-        return newUser
+        this.userRepository.delete(user.id)
     }
 
-    deleteUser(id:string): any {
-        const position = this.users.findIndex((user) => user.id === String(id));
+    async updateUser(id: number, updateUserdto: UpdateUserDTO) {
+        const user = await this.findOne(id);
 
-        if (position === -1){
-            throw new NotFoundException(`Error no se ha podido eliminar el usuario con id ${id}`)
+        if(!user){
+            throw new NotFoundException(`Usuario con ID: ${id} no existe`);
         }
 
-        this.users.splice(position, 1)
+        const updateUser = this.userRepository.merge(user, updateUserdto);
 
-        return {
-            msg: "Usuario eliminado correctamente"
-        }
+        this.userRepository.save(updateUser);
+
+        return updateUser
     }
-
-    updateUser(id:string, updateUserdto: UpdateUserDTO) {
-        console.log('.:: ID usuario: ', id)
-        console.log('.::Cambios: ', updateUserdto)
-
-        const position = this.users.findIndex((user) => user.id === String(id));
-
-        if (position === -1) {
-            throw new NotFoundException(`Error no se ha encontrados el usuario con id ${id}`)
-
-        }
-
-
-        const currentData = this.users[position];
-
-        const updateUser = {
-            ...currentData,
-            ...updateUserdto
-        }
-
-        this.users[position] = updateUser;
-
-        return {
-            msg: "User Updated",
-            data: updateUser
-        }
-
-    }
-    
 }
